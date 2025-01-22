@@ -11,8 +11,14 @@
         @else
             <div class="list-group">
                 @foreach($jocs as $joc)
-                    <a href="{{ route('game.show', $joc->id) }}" class="list-group-item list-group-item-action">
-                        {{ $joc->name }}
+                    <a href="{{ route('game.show', $joc->id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span>{{ $joc->name }}</span>
+                        <span>
+                            @php $mitjana = round($joc->reviews->avg('rating')); @endphp
+                            @for ($i = 1; $i <= 5; $i++)
+                                <i class="bi {{ $i <= $mitjana ? 'bi-star-fill text-warning' : 'bi-star text-secondary' }}"></i>
+                            @endfor
+                        </span>
                     </a>
                 @endforeach
             </div>
