@@ -7,10 +7,13 @@
             <a href="{{ route('game.show', $game->id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                 <span>{{ $game->name }}</span>
                 <span>
-                    @php $mitjana = round($game->reviews->avg('rating')); @endphp
+                    @php 
+                        $mitjana = $game->reviews->avg('rating');
+                    @endphp
                     @for ($i = 1; $i <= 5; $i++)
-                        <i class="bi {{ $i <= $mitjana ? 'bi-star-fill text-warning' : 'bi-star text-secondary' }}"></i>
+                        <i class="bi {{ $i <= round($mitjana) ? 'bi-star-fill text-warning' : 'bi-star text-secondary' }}"></i>
                     @endfor
+                    ({{ number_format($mitjana, 1) }} / 5)
                 </span>
             </a>
         @endforeach
