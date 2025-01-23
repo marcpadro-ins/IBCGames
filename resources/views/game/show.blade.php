@@ -48,6 +48,31 @@
         </div>
         <button type="submit">Enviar</button>
     </form>
+    {{-- @auth
+        <form action="{{ route('review.store') }}" method="post">
+            @csrf
+            <input type="hidden" name="game_id" value="{{ $game->id }}">
+            <div style="direction: rtl; display: inline-flex;">
+                @for ($i = 5; $i >= 1; $i--)
+                    <input type="radio" name="rating" value="{{ $i }}" id="star-{{ $i }}" style="display: none;">
+                    <label for="star-{{ $i }}" style="font-size: 2em; cursor: pointer; color: #ccc;" 
+                        onmouseover="highlightStars({{ $i }})"
+                        onmouseleave="resetStars()"
+                        onclick="setRating({{ $i }})">★</label>
+                @endfor
+            </div>
+            <div>
+                <label for="comment">Comentari:</label>
+                <textarea name="comment" id="comment"></textarea>
+            </div>
+            <button type="submit">Enviar</button>
+        </form>
+    @endauth
+
+    @guest
+        <p>Has d'iniciar sessió per a afegir valoracions</p>
+        <p><a href="{{ route('login') }}">Iniciar sessió</a></p>
+    @endguest --}}
 
     <script>
         function highlightStars(n) {
