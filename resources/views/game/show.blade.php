@@ -15,7 +15,9 @@
         
         <p><strong>Categoria:</strong> 
             @if($game->category)
-                <a href="{{ route('category.show', $game->category_id) }}" class="text-decoration-none text-primary">{{ $game->category->name }}</a>
+                <a href="{{ route('category.show', $game->category_id) }}" class="text-decoration-none text-primary">
+                    {{ $game->category->name }}
+                </a>
             @else
                 <span class="text-muted">Sense categoria</span>
             @endif
@@ -27,12 +29,16 @@
         
         @if($game->reviews->count() > 0)
             @php
-                $averageRating = $game->reviews->avg('rating') ?? 0;
+                $averageRating = round($game->reviews->avg('rating') ?? 0, 1);
             @endphp
             <p class="mb-3">
                 <strong>Mitjana de valoracions:</strong> 
                 @for ($i = 1; $i <= 5; $i++)
-                    <i class="bi {{ $i <= round($averageRating) ? 'bi-star-fill text-warning' : 'bi-star text-secondary' }}"></i>
+                    <i class="bi 
+                        @if($i <= floor($averageRating)) bi-star-fill text-warning 
+                        @elseif($i - 0.5 == $averageRating) bi-star-half text-warning 
+                        @else bi-star text-secondary 
+                        @endif"></i>
                 @endfor
                 <span class="text-muted">({{ number_format($averageRating, 1) }} / 5)</span>
             </p>
@@ -41,11 +47,18 @@
                 @foreach($game->reviews as $review)
                     <li class="list-group-item">
                         <strong>{{ $review->user->name ?? 'Usuari desconegut' }}</strong>:
+                        @php
+                            $reviewRating = round($review->rating ?? 0, 1);
+                        @endphp
                         @for ($i = 1; $i <= 5; $i++)
-                            <i class="bi {{ $i <= $review->rating ? 'bi-star-fill text-warning' : 'bi-star text-secondary' }}"></i>
+                            <i class="bi 
+                                @if($i <= floor($reviewRating)) bi-star-fill text-warning 
+                                @elseif($i - 0.5 == $reviewRating) bi-star-half text-warning 
+                                @else bi-star text-secondary 
+                                @endif"></i>
                         @endfor
                         <br>
-                        <small class="text-muted">{{ $review->comment ?? 'Sense comentari' }}</small>
+                        <small class="text-muted">{{ $review->comment ?? '' }}</small>
                     </li>
                 @endforeach
             </ul>
@@ -64,24 +77,22 @@
             @csrf
             <input type="hidden" name="game_id" value="{{ $game->id }}">
 
-            <div class="mb-3 text-center">
+            <div style="direction: rtl; display: inline-flex;">
                 @for ($i = 5; $i >= 1; $i--)
-                    <input type="radio" name="rating" value="{{ $i }}" id="star-{{ $i }}" class="d-none">
-                    <label for="star-{{ $i }}" class="fs-3 text-warning" style="cursor: pointer;" 
+                    <input type="radio" name="rating" value="{{ $i }}" id="star-{{ $i }}" style="display: none;">
+                    <label for="star-{{ $i }}" style="font-size: 2em; cursor: pointer; color: #ccc;" 
                         onmouseover="highlightStars({{ $i }})"
                         onmouseleave="resetStars()"
-                        onclick="setRating({{ $i }})">
-                        ★
-                    </label>
+                        onclick="setRating({{ $i }})">★</label>
                 @endfor
             </div>
 
             <div class="form-floating mb-3">
-                <textarea class="form-control" placeholder="Deixa un comentari" name="comment" id="comment" style="height: 100px;"></textarea>
-                <label for="comment">Comentari</label>
+                <textarea class="form-control" placeholder="Deixa un comentari" name="comment" id="comment" style="height: 75px;"></textarea>
+                <small class="text-muted fst-italic">Opcional</small>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Enviar</button>
+            <button type="submit" class="btn btn-primary w-100" id="botoEnviar" disabled>Enviar</button>
         </form>
     </div>
     <br>
@@ -111,6 +122,17 @@
 
     function setRating(n) {
         document.getElementById(`star-${n}`).checked = true;
+        habilitarBoto();
     }
+
+    function habilitarBoto() {
+        document.getElementById("botoEnviar").disabled = false;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('input[name="rating"]').forEach(input => {
+            input.addEventListener("change", habilitarBoto);
+        });
+    });
 </script>
 @endsection
