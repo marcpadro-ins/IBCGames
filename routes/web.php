@@ -34,7 +34,7 @@ Route::get('/register', function () {
 
 Route::post('/logout', function (Request $request) {
     $redirect_to = url()->previous();
-    auth()->logout();
+    Auth::logout();
     return redirect($redirect_to);
 })->name('logout');
 
